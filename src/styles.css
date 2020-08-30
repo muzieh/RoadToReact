@@ -1,4 +1,9 @@
+html {
+  background-color: #ebebd3;
+  color: #006d77;
+}
+
 .App {
   font-family: sans-serif;
-  text-align: center;
+  background-color: #ebebd3;
 }
