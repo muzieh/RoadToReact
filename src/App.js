@@ -2,21 +2,31 @@ import React from "react";
 import "./styles.css";
 import Search from "./Search";
 
-const List = (props) => {
+const Item = ({guid, title, done}) => {
+return (
+  <li>
+    {title}
+    <input type="checkbox" value={done} />
+  </li>  
+);
+}
+const List = ({todos}) => {
   return (
     <ul>
-      {props.todos.map((todo) => (
-        <li key={todo.guid}>
-          {todo.title} {todo.guid}
-          <input type="checkbox" value={todo.done} />
-        </li>
+      {todos.map(({guid,...todo}) => (
+          <Item key={guid} {...todo} />
       ))}
     </ul>
   );
 };
 
 export default function App(props) {
-  const [searchTerm, setSearchTerm] = React.useState("React");
+  const [searchTerm, setSearchTerm] = React.useState(
+    localStorage.getItem('search') || "React");
+  
+  React.useEffect(() => {
+    localStorage.setItem('search',searchTerm )
+    }, [searchTerm])
   const handleSearchTerm = (searchTerm) => {
     setSearchTerm(searchTerm);
   };
