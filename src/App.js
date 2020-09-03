@@ -2,6 +2,18 @@ import React from "react";
 import "./styles.css";
 import Search from "./Search";
 
+const useSemitPersistentState = (key, initialValue) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialValue
+  );
+
+    React.useEffect(() => {
+      localStorage.setItem(key, value);
+    },[key, value])
+
+    return [value, setValue];
+};
+
 const Item = ({guid, title, done}) => {
 return (
   <li>
@@ -20,13 +32,19 @@ const List = ({todos}) => {
   );
 };
 
+
 export default function App(props) {
+  const [searchTerm, setSearchTerm] = useSemitPersistentState('search', 'React');
+  /*
   const [searchTerm, setSearchTerm] = React.useState(
     localStorage.getItem('search') || "React");
   
   React.useEffect(() => {
+    console.log('useEffect ' +searchTerm);
     localStorage.setItem('search',searchTerm )
-    }, [searchTerm])
+    
+    }, [searchTerm]);
+*/
   const handleSearchTerm = (searchTerm) => {
     setSearchTerm(searchTerm);
   };
