@@ -37,7 +37,6 @@ const List = ({ todos }) => {
 export default function App(props) {
   const [searchTerm, setSearchTerm] = useSemitPersistentState('search', 'React');
 
-  );
   const handleSearchTerm = (searchTerm) => {
     setSearchTerm(searchTerm);
   };
