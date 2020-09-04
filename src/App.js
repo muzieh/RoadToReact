@@ -1,18 +1,18 @@
 import React from "react";
 import "./styles.css";
-import Search from "./Search";
+import InputWithLabel from "./InputWithLabel";
 
-const useSemiPersistentState = (key, initialValue) => {
+const useSemitPersistentState = (key, initialValue) => {
   console.log(`seSemiPersistentState key:${key} initialValue:${initialValue}`);
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialValue
   );
 
-  React.useEffect(() => {
-    localStorage.setItem(key, value);
-  }, [key, value]);
+    React.useEffect(() => {
+      localStorage.setItem(key, value);
+    },[key, value])
 
-  return [value, setValue];
+    return [value, setValue];
 };
 
 const Item = ({ guid, title, done }) => {
@@ -33,10 +33,10 @@ const List = ({ todos }) => {
   );
 };
 
+
 export default function App(props) {
-  const [searchTerm, setSearchTerm] = useSemiPersistentState(
-    "search",
-    "Reactor"
+  const [searchTerm, setSearchTerm] = useSemitPersistentState('search', 'React');
+
   );
   const handleSearchTerm = (searchTerm) => {
     setSearchTerm(searchTerm);
@@ -48,7 +48,7 @@ export default function App(props) {
 
   return (
     <div className="App">
-      <Search onSearch={handleSearchTerm} search={searchTerm} />
+      <InputWithLabel onInputChange={handleSearchTerm} value={searchTerm} id="search" label="search" />
       <List todos={searchedTodos} />
     </div>
   );
