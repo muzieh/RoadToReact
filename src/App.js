@@ -15,23 +15,31 @@ const useSemitPersistentState = (key, initialValue) => {
   return [value, setValue];
 };
 
-const Item = ({ guid, title, done, onRemoveItem }) => {
+const Item = ({ item, onRemoveItem }) => {
+  console.log(`Item init ${item.guid}`);
+
   return (
     <li>
-      {title}
-      <input
-        type="checkbox"
-        value={done}
-        onRemoveItem={(item) => onRemoveItem(item)}
-      />
+      {item.title}
+      <input type="checkbox" value={item.done} />
+      <span>
+        <button
+          type="button"
+          onClick={() => {
+            onRemoveItem(item);
+          }}
+        >
+          dismiss
+        </button>
+      </span>
     </li>
   );
 };
-const List = ({ todos, onRemoveItem }) => {
+const List = ({ list, onRemoveItem }) => {
   return (
     <ul>
-      {todos.map(({ guid, ...todo }) => (
-        <Item key={guid} onRemoveItem={onRemoveItem} {...todo} />
+      {list.map((item) => (
+        <Item key={item.guid} onRemoveItem={onRemoveItem} item={item} />
       ))}
     </ul>
   );
@@ -62,8 +70,9 @@ export default function App(props) {
 
   const searchedTodos = todos.filter((todo) => todo.title.includes(searchTerm));
 
-  const handleRemoveItem = (item) => {
-    setTodos(todos.filter((todo) => todo.guid !== item.guid));
+  const handleRemoveItem = ({ guid }) => {
+    console.log(`removing ${guid}`);
+    setTodos(todos.filter((todo) => todo.guid !== guid));
   };
 
   return (
@@ -76,7 +85,7 @@ export default function App(props) {
       >
         <span>Search :</span>
       </InputWithLabel>
-      <List todos={searchedTodos} onRemoveItem={handleRemoveItem} />
+      <List list={searchedTodos} onRemoveItem={handleRemoveItem} />
     </div>
   );
 }
