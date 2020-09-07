@@ -63,10 +63,28 @@ export default function App(props) {
     "search",
     "React"
   );
-  const [todos, setTodos] = React.useState(initialTodos);
+
+  const [todos, setTodos] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
   const handleSearchTerm = (searchTerm) => {
     setSearchTerm(searchTerm);
   };
+
+  const getTodosAsync = () => {
+    new Promise(
+      (resolve) =>
+        setTimeout(() => {
+          resolve({ data: { todos: initialTodos } });
+          setIsLoading(false);
+        }),
+      2000
+    );
+  };
+
+  React.useEffect(() => {
+    getTodosAsync().then((result) => setTodos(result.data.todos));
+  }, []);
 
   const searchedTodos = todos.filter((todo) => todo.title.includes(searchTerm));
 
@@ -85,7 +103,11 @@ export default function App(props) {
       >
         <span>Search :</span>
       </InputWithLabel>
-      <List list={searchedTodos} onRemoveItem={handleRemoveItem} />
+      {isLoading ? (
+        <div>Loading</div>
+      ) : (
+        <List list={searchedTodos} onRemoveItem={handleRemoveItem} />
+      )}
     </div>
   );
 }
