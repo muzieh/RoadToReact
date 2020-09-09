@@ -58,39 +58,69 @@ const initialTodos = [
   new ToDo("React")
 ];
 
+const todosReducer = (state, action) => {
+  debugger;
+  switch(action.type) {
+    case 'TODOS_FETCH_INIT':
+      return {...state, isLoading: true, isError: false};
+    case 'TODOS_FETCH_SUCCESS':
+      return {...state, list: action.payload, isLoading: false, isError: false};
+    case 'TODOS_FETCH_FAILURE':
+      return {...state, isLoading: false, isError: true, list:[]};
+    case 'TODO_REMOVE':
+      debugger;
+      const {guid} = action.payload;
+      const newList = state.list.filter(todo => todo.guid !== guid);
+      return {...state, list: newList};
+    default:
+    throw new Error();
+  }
+}
 export default function App(props) {
   const [searchTerm, setSearchTerm] = useSemitPersistentState(
     "search",
-    "React"
+    ""
   );
 
-  const [todos, setTodos] = React.useState([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  //const [todos, setTodos] = React.useState([]);
+  const [todos, dispatchTodos] = React.useReducer(todosReducer, {
+    list: [],
+    isLoading: true,
+    isError:false
+  });
+  debugger;
+  console.log(todos);
+  //const [isLoading, setIsLoading] = React.useState(true);
 
   const handleSearchTerm = (searchTerm) => {
     setSearchTerm(searchTerm);
   };
 
   const getTodosAsync = () => {
-    new Promise(
+    return new Promise(
       (resolve) =>
         setTimeout(() => {
+          //reject('sdf');
           resolve({ data: { todos: initialTodos } });
-          setIsLoading(false);
-        }),
-      2000
+        },3000)
     );
   };
 
   React.useEffect(() => {
-    getTodosAsync().then((result) => setTodos(result.data.todos));
+    dispatchTodos({type: 'TODOS_FETCH_INIT'})
+
+    getTodosAsync()
+      .then((result) => dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload:result.data.todos}))
+      .catch(result => dispatchTodos({type: 'TODOS_FETCH_FAILURE'}));
   }, []);
 
-  const searchedTodos = todos.filter((todo) => todo.title.includes(searchTerm));
+  const searchedTodos = todos.list.filter((todo) => todo.title.includes(searchTerm));
 
   const handleRemoveItem = ({ guid }) => {
+    debugger;
     console.log(`removing ${guid}`);
-    setTodos(todos.filter((todo) => todo.guid !== guid));
+    dispatchTodos({type:'TODO_REMOVE', payload: {guid: guid}})
+    //setTodos(todos.filter((todo) => todo.guid !== guid));
   };
 
   return (
@@ -103,7 +133,8 @@ export default function App(props) {
       >
         <span>Search :</span>
       </InputWithLabel>
-      {isLoading ? (
+      {todos.isError && <div>error</div>}
+      {todos.isLoading ? (
         <div>Loading</div>
       ) : (
         <List list={searchedTodos} onRemoveItem={handleRemoveItem} />
