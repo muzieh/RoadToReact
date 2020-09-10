@@ -18,10 +18,13 @@ const useSemitPersistentState = (key, initialValue) => {
 
 const Item = ({ item, onRemoveItem }) => {
   console.log(`Item init ${item.objectID}`);
-
+  const date = (new Date(item.created_at)).getFullYear();
+  debugger;
   return (
     <li>
-      {item.title}
+      <a href={item.url}>
+      {item.title} - {date}
+      </a>
       <input type="checkbox" value={item.done} />
       <span>
         <button
@@ -53,13 +56,11 @@ const todosReducer = (state, action) => {
     case 'TODOS_FETCH_INIT':
       return {...state, isLoading: true, isError: false};
     case 'TODOS_FETCH_SUCCESS':
-      debugger;
       return {...state, list: action.payload, isLoading: false, isError: false};
     case 'TODOS_FETCH_FAILURE':
       debugger;
       return {...state, isLoading: false, isError: true, list:[]};
     case 'TODO_REMOVE':
-      debugger;
       const {objectID} = action.payload;
       const newList = state.list.filter(todo => todo.objectID !== objectID);
       return {...state, list: newList};
@@ -91,16 +92,16 @@ export default function App(props) {
   React.useEffect(() => {
     dispatchTodos({type: 'TODOS_FETCH_INIT'})
 
-    fetch(`${API_ENDPOINT}`)
+    fetch(`${API_ENDPOINT}${searchTerm}`)
       .then(response => response.json())
       .then(result => dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload: result.hits}))
       .catch(err => dispatchTodos({type: 'TODOS_FETCH_FAILURE', payload:err}))
     //getTodosAsync()
       //.then((result) => dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload:result.data.todos}))
       //.catch(result => dispatchTodos({type: 'TODOS_FETCH_FAILURE'}));
-  }, []);
+  }, [searchTerm]);
 
-  const searchedTodos = todos.list.filter((todo) => todo.title && todo.title.toLowerCase().includes(searchTerm));
+  //const searchedTodos = todos.list.filter((todo) => todo.title && todo.title.toLowerCase().includes(searchTerm));
 
   const handleRemoveItem = ({ objectID }) => {
     debugger;
@@ -123,7 +124,7 @@ export default function App(props) {
       {todos.isLoading ? (
         <div>Loading</div>
       ) : (
-        <List list={searchedTodos} onRemoveItem={handleRemoveItem} />
+        <List list={todos.list} onRemoveItem={handleRemoveItem} />
       )}
     </div>
   );
