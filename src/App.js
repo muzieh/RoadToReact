@@ -1,4 +1,6 @@
 import React from "react";
+import axios from 'axios';
+
 import "./styles.css";
 import InputWithLabel from "./InputWithLabel";
 
@@ -19,7 +21,6 @@ const useSemitPersistentState = (key, initialValue) => {
 const Item = ({ item, onRemoveItem }) => {
   console.log(`Item init ${item.objectID}`);
   const date = (new Date(item.created_at)).getFullYear();
-  debugger;
   return (
     <li>
       <a href={item.url}>
@@ -58,7 +59,6 @@ const todosReducer = (state, action) => {
     case 'TODOS_FETCH_SUCCESS':
       return {...state, list: action.payload, isLoading: false, isError: false};
     case 'TODOS_FETCH_FAILURE':
-      debugger;
       return {...state, isLoading: false, isError: true, list:[]};
     case 'TODO_REMOVE':
       const {objectID} = action.payload;
@@ -82,29 +82,37 @@ export default function App(props) {
     isError:false
   });
 
+  const [url, setUrl] = React.useState(
+`${API_ENDPOINT}${searchTerm}`
+  );
+
   console.log(todos);
   //const [isLoading, setIsLoading] = React.useState(true);
 
   const handleSearchTerm = (searchTerm) => {
     setSearchTerm(searchTerm);
   };
+  const handleSearchSubmit = (event) => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`)
+    event.preventDefault();
+  }
+  const handleFetchTodos = React.useCallback(async () => {
+    dispatchTodos({type: 'TODOS_FETCH_INIT'})
+    try {
+      const result = await axios.get(url);
+      dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload: result.data.hits})
+    } catch(err) {
+      dispatchTodos({type: 'TODOS_FETCH_FAILURE', payload:err})
+    }
+  }, [url]);
 
   React.useEffect(() => {
-    dispatchTodos({type: 'TODOS_FETCH_INIT'})
-
-    fetch(`${API_ENDPOINT}${searchTerm}`)
-      .then(response => response.json())
-      .then(result => dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload: result.hits}))
-      .catch(err => dispatchTodos({type: 'TODOS_FETCH_FAILURE', payload:err}))
-    //getTodosAsync()
-      //.then((result) => dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload:result.data.todos}))
-      //.catch(result => dispatchTodos({type: 'TODOS_FETCH_FAILURE'}));
-  }, [searchTerm]);
+    handleFetchTodos();
+  }, [handleFetchTodos]);
 
   //const searchedTodos = todos.list.filter((todo) => todo.title && todo.title.toLowerCase().includes(searchTerm));
 
   const handleRemoveItem = ({ objectID }) => {
-    debugger;
     console.log(`removing ${objectID}`);
     dispatchTodos({type:'TODO_REMOVE', payload: {objectID: objectID}})
     //setTodos(todos.filter((todo) => todo.guid !== guid));
@@ -112,14 +120,17 @@ export default function App(props) {
 
   return (
     <div className="App">
-      <InputWithLabel
-        onInputChange={handleSearchTerm}
-        value={searchTerm}
-        id="search"
-        label="search"
-      >
-        <span>Search :</span>
-      </InputWithLabel>
+      <form onSubmit={handleSearchSubmit}>
+        <InputWithLabel
+            onInputChange={handleSearchTerm}
+            value={searchTerm}
+            id="search"
+            label="search"
+        >
+          <span>Search :</span>
+        </InputWithLabel>
+        <button type="submit" disabled={!searchTerm} >Submit</button>
+      </form>
       {todos.isError && <div>error</div>}
       {todos.isLoading ? (
         <div>Loading</div>
