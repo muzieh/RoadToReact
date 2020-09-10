@@ -23,7 +23,7 @@ const Item = ({ item, onRemoveItem }) => {
   return (
     <li>
       <a href={item.url}>
-      {item.title} - {date}
+      {item.title || <span>no title</span>} - {date}
       </a>
       <input type="checkbox" value={item.done} />
       <span>
