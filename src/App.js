@@ -66,6 +66,7 @@ const todosReducer = (state, action) => {
     case 'TODOS_FETCH_INIT':
       return {...state, isLoading: true, isError: false};
     case 'TODOS_FETCH_SUCCESS':
+      debugger;
       return {...state, list: action.payload, isLoading: false, isError: false};
     case 'TODOS_FETCH_FAILURE':
       debugger;
@@ -76,7 +77,7 @@ const todosReducer = (state, action) => {
       const newList = state.list.filter(todo => todo.guid !== guid);
       return {...state, list: newList};
     default:
-    throw new Error();
+     throw new Error();
   }
 }
 
@@ -92,7 +93,7 @@ export default function App(props) {
     isLoading: true,
     isError:false
   });
-  debugger;
+
   console.log(todos);
   //const [isLoading, setIsLoading] = React.useState(true);
 
@@ -115,7 +116,7 @@ export default function App(props) {
 
     fetch(`${API_ENDPOINT}`)
       .then(response => response.json())
-      .then(result => dispatchTodos({typs: 'TODOS_FETCH_SUCCESS', payload: result.hits}))
+      .then(result => dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload: result.hits}))
       .catch(err => dispatchTodos({type: 'TODOS_FETCH_FAILURE', payload:err}))
     //getTodosAsync()
       //.then((result) => dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload:result.data.todos}))
