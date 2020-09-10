@@ -17,7 +17,7 @@ const useSemitPersistentState = (key, initialValue) => {
 };
 
 const Item = ({ item, onRemoveItem }) => {
-  console.log(`Item init ${item.guid}`);
+  console.log(`Item init ${item.objectID}`);
 
   return (
     <li>
@@ -41,27 +41,14 @@ const List = ({ list, onRemoveItem }) => {
   return (
     <ul>
       {list.map((item) => (
-        <Item key={item.guid} onRemoveItem={onRemoveItem} item={item} />
+        <Item key={item.objectID} onRemoveItem={onRemoveItem} item={item} />
       ))}
     </ul>
   );
 };
 
-const ToDo = function (title) {
-  this.title = title;
-  this.done = false;
-  this.guid = Math.floor(Math.random() * 10000000);
-  return this;
-};
-
-const initialTodos = [
-  new ToDo("sniadanie"),
-  new ToDo("obiad"),
-  new ToDo("React")
-];
 
 const todosReducer = (state, action) => {
-  debugger;
   switch(action.type) {
     case 'TODOS_FETCH_INIT':
       return {...state, isLoading: true, isError: false};
@@ -73,8 +60,8 @@ const todosReducer = (state, action) => {
       return {...state, isLoading: false, isError: true, list:[]};
     case 'TODO_REMOVE':
       debugger;
-      const {guid} = action.payload;
-      const newList = state.list.filter(todo => todo.guid !== guid);
+      const {objectID} = action.payload;
+      const newList = state.list.filter(todo => todo.objectID !== objectID);
       return {...state, list: newList};
     default:
      throw new Error();
@@ -101,16 +88,6 @@ export default function App(props) {
     setSearchTerm(searchTerm);
   };
 
-  const getTodosAsync = () => {
-    return new Promise(
-      (resolve) =>
-        setTimeout(() => {
-          //reject('sdf');
-          resolve({ data: { todos: initialTodos } });
-        },3000)
-    );
-  };
-
   React.useEffect(() => {
     dispatchTodos({type: 'TODOS_FETCH_INIT'})
 
@@ -123,12 +100,12 @@ export default function App(props) {
       //.catch(result => dispatchTodos({type: 'TODOS_FETCH_FAILURE'}));
   }, []);
 
-  const searchedTodos = todos.list.filter((todo) => todo.title.includes(searchTerm));
+  const searchedTodos = todos.list.filter((todo) => todo.title && todo.title.toLowerCase().includes(searchTerm));
 
-  const handleRemoveItem = ({ guid }) => {
+  const handleRemoveItem = ({ objectID }) => {
     debugger;
-    console.log(`removing ${guid}`);
-    dispatchTodos({type:'TODO_REMOVE', payload: {guid: guid}})
+    console.log(`removing ${objectID}`);
+    dispatchTodos({type:'TODO_REMOVE', payload: {objectID: objectID}})
     //setTodos(todos.filter((todo) => todo.guid !== guid));
   };
 
