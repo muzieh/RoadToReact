@@ -2,6 +2,7 @@ import React from "react";
 import "./styles.css";
 import InputWithLabel from "./InputWithLabel";
 
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 const useSemitPersistentState = (key, initialValue) => {
   console.log(`seSemiPersistentState key:${key} initialValue:${initialValue}`);
   const [value, setValue] = React.useState(
@@ -35,6 +36,7 @@ const Item = ({ item, onRemoveItem }) => {
     </li>
   );
 };
+
 const List = ({ list, onRemoveItem }) => {
   return (
     <ul>
@@ -66,6 +68,7 @@ const todosReducer = (state, action) => {
     case 'TODOS_FETCH_SUCCESS':
       return {...state, list: action.payload, isLoading: false, isError: false};
     case 'TODOS_FETCH_FAILURE':
+      debugger;
       return {...state, isLoading: false, isError: true, list:[]};
     case 'TODO_REMOVE':
       debugger;
@@ -76,6 +79,7 @@ const todosReducer = (state, action) => {
     throw new Error();
   }
 }
+
 export default function App(props) {
   const [searchTerm, setSearchTerm] = useSemitPersistentState(
     "search",
@@ -109,9 +113,13 @@ export default function App(props) {
   React.useEffect(() => {
     dispatchTodos({type: 'TODOS_FETCH_INIT'})
 
-    getTodosAsync()
-      .then((result) => dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload:result.data.todos}))
-      .catch(result => dispatchTodos({type: 'TODOS_FETCH_FAILURE'}));
+    fetch(`${API_ENDPOINT}`)
+      .then(response => response.json())
+      .then(result => dispatchTodos({typs: 'TODOS_FETCH_SUCCESS', payload: result.hits}))
+      .catch(err => dispatchTodos({type: 'TODOS_FETCH_FAILURE', payload:err}))
+    //getTodosAsync()
+      //.then((result) => dispatchTodos({type: 'TODOS_FETCH_SUCCESS', payload:result.data.todos}))
+      //.catch(result => dispatchTodos({type: 'TODOS_FETCH_FAILURE'}));
   }, []);
 
   const searchedTodos = todos.list.filter((todo) => todo.title.includes(searchTerm));
