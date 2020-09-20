@@ -1,0 +1,13 @@
+.ajax-loader {
+    color: red;
+}
+
+.list {
+
+}
+
+.list__header {
+    margin:1rem 0;
+    color: black;
+    font-weight: bold;
+}
