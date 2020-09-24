@@ -1,7 +1,10 @@
 import React from "react";
 import axios from 'axios';
 
-import "./styles.css";
+import "./styles.scss";
+import "./list.scss";
+import styles from "./App.module.scss";
+
 import InputWithLabel from "./InputWithLabel";
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
@@ -22,13 +25,13 @@ const Item = ({ item, onRemoveItem }) => {
   console.log(`Item init ${item.objectID}`);
   const date = (new Date(item.created_at)).getFullYear();
   return (
-    <li>
-      <a href={item.url}>
+    <li className='list-element'>
+      <a href={item.url} className='list-element-link'>
       {item.title || <span>no title</span>} - {date}
       </a>
       <input type="checkbox" value={item.done} />
       <span>
-        <button
+        <button className="button"
           type="button"
           onClick={() => {
             onRemoveItem(item);
@@ -43,7 +46,7 @@ const Item = ({ item, onRemoveItem }) => {
 
 const List = ({ list, onRemoveItem }) => {
   return (
-    <ul>
+    <ul className='list'>
       {list.map((item) => (
         <Item key={item.objectID} onRemoveItem={onRemoveItem} item={item} />
       ))}
@@ -69,7 +72,7 @@ const todosReducer = (state, action) => {
   }
 }
 
-export default function App(props) {
+export default function App() {
   const [searchTerm, setSearchTerm] = useSemitPersistentState(
     "search",
     ""
@@ -119,7 +122,8 @@ export default function App(props) {
   };
 
   return (
-    <div className="App">
+    <div className={styles.container}>
+      <h1 className={styles.headlinePrimary}>Books !!</h1>
       <form onSubmit={handleSearchSubmit}>
         <InputWithLabel
             onInputChange={handleSearchTerm}

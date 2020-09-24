@@ -1,0 +1,22 @@
+.list {
+  margin-top: 2rem;
+}
+
+.list-element {
+  list-style: none;
+  margin-top:0.5rem;
+}
+
+.list-element-link {
+  color: #ecf885;
+  text-decoration: none;
+  margin-right: 0.5rem;
+
+  &:hover {
+    color: chocolate;
+  }
+
+
+}
+
+

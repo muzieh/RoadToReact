@@ -1,0 +1,13 @@
+.container {
+  height: 100vw;
+  padding:20px;
+  background: #516583; /* fallback for old browsers */
+  background: linear-gradient(to left, #86bcbf, #556d8f);
+  color: #171212;
+}
+
+.headlinePrimary {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
