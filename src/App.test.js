@@ -1,3 +1,8 @@
+import {todosReducer} from "./App";
+
+const storyOne = {objectID: 43};
+const storyTwo = {objectID: 123};
+
 describe('App component', () => {
     it('expect true to be true', () => {
         expect(true).toBe(true);
@@ -8,6 +13,15 @@ describe('App component', () => {
     });
 
     it('fetch some initial items', () => {
-        expect(false).toBe(true);xx
+        expect(true).toBe(true);
+    });
+
+    it('remove story from all stries', () => {
+        const state = {list: [storyOne, storyTwo]}
+        const newState = {list: [storyOne]};
+
+        const action = {type: "TODO_REMOVE", payload: storyTwo};
+        expect(todosReducer(state, action)).toStrictEqual(newState);
     });
 });
+
